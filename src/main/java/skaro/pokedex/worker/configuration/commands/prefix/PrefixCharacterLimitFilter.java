@@ -1,13 +1,11 @@
 package skaro.pokedex.worker.configuration.commands.prefix;
 
-import java.lang.invoke.MethodHandles;
-
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import discord4j.rest.http.client.ClientResponse;
 import reactor.core.publisher.Mono;
+import skaro.pokedex.sdk.discord.DiscordMessageDirector;
 import skaro.pokedex.sdk.messaging.dispatch.AnsweredWorkRequest;
 import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
 import skaro.pokedex.sdk.messaging.dispatch.WorkStatus;
@@ -15,26 +13,46 @@ import skaro.pokedex.sdk.worker.command.validation.ValidationFilter;
 
 @Component
 public class PrefixCharacterLimitFilter implements ValidationFilter {
-	private final static Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	private int maxLength;
+	private DiscordMessageDirector<PrefixCharacterLimitMessageContent> messageDirector;
 	
-	private int maxLength = 4;
-	
-	@Override
-	public Mono<AnsweredWorkRequest> filter(WorkRequest request) {
-		return Mono.justOrEmpty(request.getArguments().stream().findFirst())
-			.flatMap(this::verifyCharacterLimit);
+	public PrefixCharacterLimitFilter(DiscordMessageDirector<PrefixCharacterLimitMessageContent> messageDirector) {
+		this.maxLength = 4;
+		this.messageDirector = messageDirector;
 	}
 
-	private Mono<AnsweredWorkRequest> verifyCharacterLimit(String newPrefix) {
-		int prefixLength = StringUtils.length(newPrefix);
-		if(prefixLength <= maxLength) {
+	@Override
+	public Mono<AnsweredWorkRequest> filter(WorkRequest request) {
+		if(meetsCharacterLimit(request)) {
 			return Mono.empty();
 		}
 		
-		LOG.warn("Your new prefix cannot be more than {} characters", maxLength);
+		return sendInvalidRequestResponse(request)
+				.thenReturn(createAnswer(request));
+	}
+
+	private boolean meetsCharacterLimit(WorkRequest request) {
+		return request.getArguments().stream()
+				.findFirst()
+				.map(StringUtils::length)
+				.map(prefixLength -> prefixLength <= maxLength)
+				.orElse(false);
+	}
+	
+	private Mono<ClientResponse> sendInvalidRequestResponse(WorkRequest request) {
+		PrefixCharacterLimitMessageContent messageContent = new PrefixCharacterLimitMessageContent();
+		messageContent.setMaxLength(maxLength);
+		messageContent.setLanguage(request.getLanguage());
+		
+		return messageDirector.createDiscordMessage(messageContent, request.getChannelId());
+	}
+	
+	private AnsweredWorkRequest createAnswer(WorkRequest request) {
 		AnsweredWorkRequest answer = new AnsweredWorkRequest();
 		answer.setStatus(WorkStatus.BAD_REQUEST);
-		return Mono.just(answer);
+		answer.setWorkRequest(request);
+		
+		return answer;
 	}
 	
 }

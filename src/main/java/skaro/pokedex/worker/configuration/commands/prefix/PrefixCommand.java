@@ -1,7 +1,9 @@
 package skaro.pokedex.worker.configuration.commands.prefix;
 
-import static skaro.pokedex.worker.configuration.commands.prefix.PrefixCommandConfiguration.ADMIN_ROLE_VALIDATOR;
+import static skaro.pokedex.worker.configuration.commands.prefix.PrefixCommandConfiguration.ADMIN_ROLE_FILTER;
+import static skaro.pokedex.worker.configuration.commands.prefix.PrefixCommandConfiguration.COMMAND_LOCALE_SPEC_BEAN;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -11,33 +13,35 @@ import discord4j.discordjson.json.MessageCreateRequest;
 import discord4j.rest.request.Router;
 import discord4j.rest.route.Routes;
 import reactor.core.publisher.Mono;
+import skaro.pokedex.sdk.client.Language;
+import skaro.pokedex.sdk.client.guild.GuildServiceClient;
 import skaro.pokedex.sdk.messaging.dispatch.AnsweredWorkRequest;
 import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
 import skaro.pokedex.sdk.messaging.dispatch.WorkStatus;
-import skaro.pokedex.sdk.resource.Language;
 import skaro.pokedex.sdk.worker.command.Command;
 import skaro.pokedex.sdk.worker.command.specification.DiscordEmbedLocaleSpec;
 import skaro.pokedex.sdk.worker.command.specification.DiscordEmbedSpec;
 import skaro.pokedex.sdk.worker.command.validation.Filter;
 import skaro.pokedex.sdk.worker.command.validation.ValidationFilterChain;
-import skaro.pokedex.sdk.worker.command.validation.common.DiscordPermissionFilter;
-import skaro.pokedex.sdk.worker.command.validation.common.SingleArgumentFilter;
+import skaro.pokedex.sdk.worker.command.validation.common.DiscordPermissionsFilter;
+import skaro.pokedex.sdk.worker.command.validation.common.ExpectedArgumentsFilter;
 
 @Component("prefixCommand")
-@Order(Ordered.HIGHEST_PRECEDENCE)
 @ValidationFilterChain({
-	@Filter(SingleArgumentFilter.class),
+	@Filter(ExpectedArgumentsFilter.class),
 	@Filter(PrefixCharacterLimitFilter.class),
-	@Filter(value = DiscordPermissionFilter.class, beanName = ADMIN_ROLE_VALIDATOR)
+	@Filter(value = DiscordPermissionsFilter.class, beanName = ADMIN_ROLE_FILTER)
 })
 public class PrefixCommand implements Command {
 
 	private Router router;
 	private DiscordEmbedLocaleSpec localeSpec;
+	private GuildServiceClient client;
 	
-	public PrefixCommand(Router router, DiscordEmbedLocaleSpec localeSpec) {
+	public PrefixCommand(Router router, @Qualifier(COMMAND_LOCALE_SPEC_BEAN) DiscordEmbedLocaleSpec localeSpec, GuildServiceClient client) {
 		this.router = router;
 		this.localeSpec = localeSpec;
+		this.client = client;
 	}
 
 	@Override
