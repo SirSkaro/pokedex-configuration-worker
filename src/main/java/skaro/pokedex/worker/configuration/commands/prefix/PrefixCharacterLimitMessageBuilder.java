@@ -15,7 +15,6 @@ public class PrefixCharacterLimitMessageBuilder implements MessageBuilder<Prefix
 		this.localeSpec = localeSpec;
 	}
 
-
 	@Override
 	public MessageCreateRequest populateFrom(PrefixCharacterLimitMessageContent messageContent) {
 		DiscordEmbedSpec embedSpec = localeSpec.getEmbedSpecs().get(messageContent.getLanguage());

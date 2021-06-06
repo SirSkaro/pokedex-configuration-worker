@@ -130,4 +130,10 @@ public class PrefixCommandConfiguration {
 		return new DiscordEmbedLocaleSpec();
 	}
 	
+	@Bean
+	public DiscordMessageDirector<PrefixChangeMessageContent> prefixMessageDirector(DiscordRouterFacade router, @Qualifier(COMMAND_LOCALE_SPEC_BEAN) DiscordEmbedLocaleSpec localeSpec) {
+		PrefixChangeMessageBuilder messageBuilder = new PrefixChangeMessageBuilder(localeSpec);
+		return new MessageCreateRequestDirector<PrefixChangeMessageContent>(router, messageBuilder);
+	}
+	
 }
