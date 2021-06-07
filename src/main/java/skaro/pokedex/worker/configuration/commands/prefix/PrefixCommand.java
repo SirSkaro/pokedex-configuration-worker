@@ -50,7 +50,7 @@ public class PrefixCommand implements Command {
 		
 		return client.getSettings(guildId)
 				.flatMap(guildSettings -> updateGuildPrefix(guildSettings, guildId, newPrefix))
-				.switchIfEmpty(createNewGuildSettings(guildId, newPrefix, request.getLanguage()));
+				.switchIfEmpty(Mono.defer(() -> createNewGuildSettings(guildId, newPrefix, request.getLanguage())));
 	}
 	
 	private Mono<GuildSettings> updateGuildPrefix(GuildSettings guildSettings, String guildId, String newPrefix) {
