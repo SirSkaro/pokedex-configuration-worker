@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import skaro.pokedex.sdk.client.Language;
 import skaro.pokedex.sdk.client.guild.GuildServiceClient;
+import skaro.pokedex.sdk.client.guild.GuildSettings;
 import skaro.pokedex.sdk.discord.DiscordMessageDirector;
 import skaro.pokedex.sdk.messaging.dispatch.AnsweredWorkRequest;
 import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
@@ -41,7 +42,8 @@ public class LanguageCommand implements Command {
 		LanguageChangeMessageContent messageContent = new LanguageChangeMessageContent();
 		messageContent.setLanguage(newLanguage);
 		
-		return director.createDiscordMessage(messageContent, request.getChannelId())
+		return updateGuildSettings(request, newLanguage)
+				.then(Mono.defer(() -> director.createDiscordMessage(messageContent, request.getChannelId())))
 				.thenReturn(createAnswer(request));
 	}
 	
@@ -50,12 +52,32 @@ public class LanguageCommand implements Command {
 		return Language.getLanguage(languageArgument).get();
 	}
 	
+	private Mono<GuildSettings> updateGuildSettings(WorkRequest request, Language newLanguage) {
+		String guildId = request.getGuildId();
+		
+		return client.getSettings(guildId)
+				.flatMap(guildSettings -> updateGuildLanguage(guildSettings, guildId, newLanguage))
+				.switchIfEmpty(Mono.defer(() -> createNewGuildSettings(guildId, newLanguage)));
+	}
+	
 	private AnsweredWorkRequest createAnswer(WorkRequest request) {
 		AnsweredWorkRequest answer = new AnsweredWorkRequest();
 		answer.setStatus(WorkStatus.SUCCESS);
 		answer.setWorkRequest(request);
 		
 		return answer;
+	}
+	
+	private Mono<GuildSettings> updateGuildLanguage(GuildSettings guildSettings, String guildId, Language newLanguage) {
+		guildSettings.setLanguage(newLanguage);
+		return client.saveSettings(guildId, guildSettings);
+	}
+	
+	private Mono<GuildSettings> createNewGuildSettings(String guildId, Language language) {
+		GuildSettings newSettings = new GuildSettings();
+		newSettings.setLanguage(language);
+		
+		return client.saveSettings(guildId, newSettings);
 	}
 
 }
