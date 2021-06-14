@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 import discord4j.rest.util.Permission;
 import discord4j.rest.util.PermissionSet;
@@ -31,20 +32,19 @@ import skaro.pokedex.sdk.worker.command.validation.common.ExpectedArgumentsMessa
 import skaro.pokedex.sdk.worker.command.validation.common.ExpectedArgumentsMessageContent;
 
 @Configuration
+@PropertySource("classpath:prefix-command.properties")
 public class PrefixCommandConfiguration {
-	public static final String PREFIX_ARGUMENT_FILTER = "prefixArgumentValidator";
+	public static final String PREFIX_EXPECTED_ARGUMENT_FILTER_BEAN = "prefixArgumentValidator";
 	public static final String ADMIN_ROLE_FILTER = "adminRoleValidator";
 	public static final String COMMAND_LOCALE_SPEC_BEAN = "prefixLocaleSpec";
 	private static final String COMMAND_LOCALE_SPEC_PROPERTIES_PREFIX = "skaro.pokedex.worker.discord.embed-locale.prefix";
-	private static final String PREFIX_EXPECTED_ARGUMENTS_FILTER_LOCALE_SPEC_PROPERTIES_PREFIX = "skaro.pokedex.worker.discord.embed-locale.filter.expected-arguments";
+	private static final String PREFIX_EXPECTED_ARGUMENTS_FILTER_LOCALE_SPEC_PROPERTIES_PREFIX = "skaro.pokedex.worker.discord.embed-locale.filter.prefix.expected-arguments";
 	private static final String PREFIX_EXPECTED_ARGUMENTS_FILTER_LOCALE_SPEC_BEAN = "prefixExpectedArgumentsFilterLocaleSpec";
 	private static final String BASE_PREFIX_EXPECTED_ARGUMENTS_FILTER_LOCALE_SPEC_BEAN = "basePrefixExpectedArgumentsFilterLocaleSpec";
 	private static final String EXPECTED_ARGUMENTS_MESSAGE_DIRECTOR_BEAN = "prefixExpectedArgumentsMessageDirector";
 	private static final String CHARACTER_LIMIT_FILTER_LOCALE_SPEC_BEAN = "characterLimitFilterLocaleSpec";
 	private static final String BASE_CHARACTER_LIMIT_FILTER_LOCALE_SPEC_BEAN = "baseCharacterLimitFilterLocaleSpec";
-	private static final String CHARACTER_LIMIT_FILTER_PROPERTIES_PREFIX = "skaro.pokedex.sdk.discord.embed-locale.filter.character-limit";
-	
-	
+	private static final String CHARACTER_LIMIT_FILTER_PROPERTIES_PREFIX = "skaro.pokedex.sdk.discord.embed-locale.filter.prefix.character-limit";
 	
 	@Bean(BASE_PREFIX_EXPECTED_ARGUMENTS_FILTER_LOCALE_SPEC_BEAN)
 	@Valid
@@ -79,7 +79,7 @@ public class PrefixCommandConfiguration {
 		return new MessageCreateRequestDirector<ExpectedArgumentsMessageContent>(router, messageBuilder);
 	}
 	
-	@Bean(PREFIX_ARGUMENT_FILTER)
+	@Bean(PREFIX_EXPECTED_ARGUMENT_FILTER_BEAN)
 	public ExpectedArgumentsFilter exactArgumentCountFilter(@Qualifier(EXPECTED_ARGUMENTS_MESSAGE_DIRECTOR_BEAN) DiscordMessageDirector<ExpectedArgumentsMessageContent> director) {
 		return new ExpectedArgumentsFilter(1, director);
 	}

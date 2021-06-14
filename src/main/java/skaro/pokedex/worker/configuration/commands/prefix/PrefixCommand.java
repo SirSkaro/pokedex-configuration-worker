@@ -1,6 +1,7 @@
 package skaro.pokedex.worker.configuration.commands.prefix;
 
 import static skaro.pokedex.worker.configuration.commands.prefix.PrefixCommandConfiguration.ADMIN_ROLE_FILTER;
+import static skaro.pokedex.worker.configuration.commands.prefix.PrefixCommandConfiguration.PREFIX_EXPECTED_ARGUMENT_FILTER_BEAN;
 
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,7 @@ import skaro.pokedex.sdk.worker.command.validation.common.ExpectedArgumentsFilte
 
 @Component("prefixCommand")
 @ValidationFilterChain({
-	@Filter(ExpectedArgumentsFilter.class),
+	@Filter(value = ExpectedArgumentsFilter.class, beanName = PREFIX_EXPECTED_ARGUMENT_FILTER_BEAN),
 	@Filter(PrefixCharacterLimitFilter.class),
 	@Filter(value = DiscordPermissionsFilter.class, beanName = ADMIN_ROLE_FILTER)
 })
