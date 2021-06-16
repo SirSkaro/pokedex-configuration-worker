@@ -1,7 +1,7 @@
-package skaro.pokedex.worker.configuration.language;
+package skaro.pokedex.worker.configuration.commands.language;
 
+import static skaro.pokedex.worker.configuration.commands.language.LanguageCommandConfiguration.LANGUAGE_EXPECTED_ARGUMENT_FILTER_BEAN;
 import static skaro.pokedex.worker.configuration.commands.prefix.PrefixCommandConfiguration.ADMIN_ROLE_FILTER;
-import static skaro.pokedex.worker.configuration.language.LanguageCommandConfiguration.LANGUAGE_EXPECTED_ARGUMENT_FILTER_BEAN;
 
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package skaro.pokedex.worker.configuration.language;
+package skaro.pokedex.worker.configuration.commands.language;
 
 import discord4j.discordjson.json.EmbedData;
 import discord4j.discordjson.json.MessageCreateRequest;

@@ -1,4 +1,4 @@
-package skaro.pokedex.worker.configuration.language;
+package skaro.pokedex.worker.configuration.commands.language;
 
 import static skaro.pokedex.sdk.worker.command.specification.CommonLocaleSpecConfiguration.BASE_WARNING_LOCALE_SPEC_BEAN;
 import static skaro.pokedex.sdk.worker.command.specification.CommonLocaleSpecConfiguration.EXPECTED_ARGUMENTS_FILTER_LOCALE_SPEC_BEAN;

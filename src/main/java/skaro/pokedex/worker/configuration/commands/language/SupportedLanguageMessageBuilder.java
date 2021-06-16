@@ -1,4 +1,4 @@
-package skaro.pokedex.worker.configuration.language;
+package skaro.pokedex.worker.configuration.commands.language;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
