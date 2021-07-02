@@ -8,6 +8,7 @@ import skaro.pokedex.sdk.worker.WorkerDiscordConfiguration;
 import skaro.pokedex.sdk.worker.WorkerMessageListenConfiguration;
 import skaro.pokedex.sdk.worker.WorkerResourceConfiguration;
 import skaro.pokedex.sdk.worker.command.DefaultWorkerCommandConfiguration;
+import skaro.pokedex.sdk.worker.command.ratelimit.local.LocalRateLimitConfiguration;
 
 @Configuration
 @Import({
@@ -15,7 +16,8 @@ import skaro.pokedex.sdk.worker.command.DefaultWorkerCommandConfiguration;
 	WorkerDiscordConfiguration.class, 
 	WorkerMessageListenConfiguration.class,
 	DefaultWorkerCommandConfiguration.class,
-	GuildServiceClientConfiguration.class
+	GuildServiceClientConfiguration.class,
+	LocalRateLimitConfiguration.class
 })
 public class ConfigurationWorkerConfiguration {
 

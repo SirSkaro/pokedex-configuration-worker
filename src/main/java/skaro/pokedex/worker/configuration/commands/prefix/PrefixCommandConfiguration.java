@@ -2,7 +2,7 @@ package skaro.pokedex.worker.configuration.commands.prefix;
 
 
 import static skaro.pokedex.sdk.worker.command.specification.CommonLocaleSpecConfiguration.BASE_WARNING_LOCALE_SPEC_BEAN;
-import static skaro.pokedex.sdk.worker.command.specification.CommonLocaleSpecConfiguration.DISOCRD_PERMISSION_LOCALE_SPEC_BEAN;
+import static skaro.pokedex.sdk.worker.command.specification.CommonLocaleSpecConfiguration.DISCORD_PERMISSION_MESSAGE_DIRECTOR_BEAN;
 import static skaro.pokedex.sdk.worker.command.specification.CommonLocaleSpecConfiguration.EXPECTED_ARGUMENTS_FILTER_LOCALE_SPEC_BEAN;
 
 import java.util.HashMap;
@@ -25,7 +25,6 @@ import skaro.pokedex.sdk.discord.MessageCreateRequestDirector;
 import skaro.pokedex.sdk.worker.command.specification.DiscordEmbedLocaleSpec;
 import skaro.pokedex.sdk.worker.command.specification.DiscordEmbedSpec;
 import skaro.pokedex.sdk.worker.command.validation.common.DiscordPermissionsFilter;
-import skaro.pokedex.sdk.worker.command.validation.common.DiscordPermissionsMessageBuilder;
 import skaro.pokedex.sdk.worker.command.validation.common.DiscordPermissionsMessageContent;
 import skaro.pokedex.sdk.worker.command.validation.common.ExpectedArgumentsFilter;
 import skaro.pokedex.sdk.worker.command.validation.common.ExpectedArgumentsMessageBuilder;
@@ -85,10 +84,10 @@ public class PrefixCommandConfiguration {
 	}
 	
 	@Bean(ADMIN_ROLE_FILTER)
-	public DiscordPermissionsFilter discordPermissionFilter(DiscordRouterFacade router, @Qualifier(DISOCRD_PERMISSION_LOCALE_SPEC_BEAN) DiscordEmbedLocaleSpec localeSpec) {
+	public DiscordPermissionsFilter discordPermissionFilter(
+			@Qualifier(DISCORD_PERMISSION_MESSAGE_DIRECTOR_BEAN) DiscordMessageDirector<DiscordPermissionsMessageContent> director,
+			DiscordRouterFacade router) {
 		PermissionSet requiredPermissions = PermissionSet.of(Permission.MANAGE_ROLES);
-		DiscordPermissionsMessageBuilder messageBuilder = new DiscordPermissionsMessageBuilder(localeSpec);
-		MessageCreateRequestDirector<DiscordPermissionsMessageContent> director = new MessageCreateRequestDirector<DiscordPermissionsMessageContent>(router, messageBuilder);
 		return new DiscordPermissionsFilter(requiredPermissions, router, director);
 	}
 	
